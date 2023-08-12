@@ -1,6 +1,9 @@
 package br.com.duannistontriocodechallenge.game.board.data
 
-data class GameBoardAdapterItemData(val gameBoardAdapterType: GameBoardAdapterType) {
+data class GameBoardAdapterItemData(
+    var position: Position,
+    var gameBoardAdapterType: GameBoardAdapterType
+) {
     enum class GameBoardAdapterType {
         EMPTY,
         PRIZE,

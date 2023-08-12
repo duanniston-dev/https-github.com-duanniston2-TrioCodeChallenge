@@ -8,7 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import br.com.duannistontriocodechallenge.databinding.GameBoardFragmentBinding
 import br.com.duannistontriocodechallenge.game.board.application.adapter.GameBoardAdapter
-import br.com.duannistontriocodechallenge.game.board.data.GameBoardAdapterItemData
+import br.com.duannistontriocodechallenge.game.board.application.viewmodel.GameBoardViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class GameBoardFragment : Fragment() {
 
@@ -17,6 +18,7 @@ class GameBoardFragment : Fragment() {
     private val gameBoardAdapter by lazy {
         GameBoardAdapter()
     }
+    private val gameBoardViewModel by viewModel<GameBoardViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,7 +32,7 @@ class GameBoardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpView()
-        setUpData()
+        setUpObservers()
     }
 
     override fun onDestroyView() {
@@ -49,20 +51,10 @@ class GameBoardFragment : Fragment() {
         }
     }
 
-    private fun setUpData() {
-        val sampleList = listOf(
-            GameBoardAdapterItemData(GameBoardAdapterItemData.GameBoardAdapterType.EMPTY),
-            GameBoardAdapterItemData(GameBoardAdapterItemData.GameBoardAdapterType.PRIZE),
-            GameBoardAdapterItemData(GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_CURRENT),
-            GameBoardAdapterItemData(GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_CURRENT),
-            GameBoardAdapterItemData(GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_LINE),
-            GameBoardAdapterItemData(GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_LINE),
-            GameBoardAdapterItemData(GameBoardAdapterItemData.GameBoardAdapterType.EMPTY),
-            GameBoardAdapterItemData(GameBoardAdapterItemData.GameBoardAdapterType.PRIZE),
-            GameBoardAdapterItemData(GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_LINE),
-            GameBoardAdapterItemData(GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_LINE)
-        )
-        gameBoardAdapter.submitList(sampleList)
+    private fun setUpObservers() {
+        gameBoardViewModel.boardLiveData.observe(viewLifecycleOwner) {
+            gameBoardAdapter.submitList(it)
+        }
     }
 
 }

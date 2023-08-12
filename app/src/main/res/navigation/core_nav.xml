@@ -7,5 +7,13 @@
     <fragment
         android:id="@+id/gameOnboardingFragment"
         android:name="br.com.duannistontriocodechallenge.game.onboarding.application.GameOnboardingFragment"
-        android:label="GameOnboardingFragment" />
+        android:label="GameOnboardingFragment" >
+        <action
+            android:id="@+id/action_gameOnboardingFragment_to_gameBoardFragment"
+            app:destination="@id/gameBoardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/gameBoardFragment"
+        android:name="br.com.duannistontriocodechallenge.game.board.application.GameBoardFragment"
+        android:label="GameBoardFragment" />
 </navigation>

@@ -23,14 +23,18 @@ class GameBoardViewModel(application: Application, val gameBoardUseCase: GameBoa
     val scoreRobotLiveData: MutableLiveData<BoardGameScore> = MutableLiveData()
 
     init {
-        gameBoardUseCase.board.onStart {
+        gameBoardUseCase.boardFlow.onStart {
 
         }.flowOn(Dispatchers.IO).onEach { board ->
             boardLiveData.value = board.flatMap { it.toList() }
         }.flowOn(Dispatchers.Main).launchIn(viewModelScope)
 
-        gameBoardUseCase.startGame().flowOn(Dispatchers.IO).onEach {
+        gameBoardUseCase.gameFlow.onEach {
             when (it) {
+                GameBoardState.WAITING -> {
+
+                }
+
                 GameBoardState.CLEANED -> {
 
                 }
@@ -40,10 +44,6 @@ class GameBoardViewModel(application: Application, val gameBoardUseCase: GameBoa
                 }
 
                 GameBoardState.ADDED_PRIZE -> {
-
-                }
-
-                GameBoardState.READY_TO_START -> {
 
                 }
 
@@ -60,7 +60,9 @@ class GameBoardViewModel(application: Application, val gameBoardUseCase: GameBoa
 
                 }
             }
-        }.catch {
+        }.flowOn(Dispatchers.Main).launchIn(viewModelScope)
+
+        gameBoardUseCase.startGame().flowOn(Dispatchers.IO).catch {
             Log.e("GameBoardViewModel", "Error", it)
         }.flowOn(Dispatchers.Main).launchIn(viewModelScope)
 
@@ -87,11 +89,11 @@ class GameBoardViewModel(application: Application, val gameBoardUseCase: GameBoa
         } else {
             when (gameBoardState) {
                 GameBoardState.ROBOT_1_WIN -> {
-                    scoreRobotLiveData.value = BoardGameScore(1,0)
+                    scoreRobotLiveData.value = BoardGameScore(1, 0)
                 }
 
                 GameBoardState.ROBOT_2_WIN -> {
-                    scoreRobotLiveData.value =BoardGameScore(0,1)
+                    scoreRobotLiveData.value = BoardGameScore(0, 1)
                 }
 
                 else -> {

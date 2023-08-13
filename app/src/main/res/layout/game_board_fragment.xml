@@ -22,29 +22,54 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:drawablePadding="5dp"
+        android:gravity="center"
         android:text="0"
         android:textColor="@color/purple_1"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toTopOf="@id/rv_board"
         app:layout_constraintEnd_toStartOf="@id/tv_robot2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
+    <ImageView
+        app:layout_constraintBottom_toTopOf="@id/tv_robot1"
+        app:layout_constraintEnd_toEndOf="@id/tv_robot1"
+        app:layout_constraintStart_toStartOf="@id/tv_robot1"
+        android:src="@drawable/shape_circle"
+        android:id="@+id/iv_robot1"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:tint="@color/purple_1" />
+
     <TextView
-        android:gravity="end"
         android:id="@+id/tv_robot2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="25dp"
         android:drawablePadding="5dp"
+        android:gravity="center"
         android:text="0"
         android:textColor="@color/teal_1"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toTopOf="@id/rv_board"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tv_robot1"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
+    <ImageView
+        app:layout_constraintBottom_toTopOf="@id/tv_robot2"
+        app:layout_constraintEnd_toEndOf="@id/tv_robot2"
+        app:layout_constraintStart_toStartOf="@id/tv_robot2"
+        android:src="@drawable/shape_circle"
+        android:id="@+id/iv_robot2"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:tint="@color/teal_1" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_board"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:paddingStart="25dp"
         android:paddingEnd="25dp"

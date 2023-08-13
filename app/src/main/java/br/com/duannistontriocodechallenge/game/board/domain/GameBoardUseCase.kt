@@ -174,38 +174,14 @@ class GameBoardUseCase {
             val robotClone = robot.copy()
 
             newBoard[robotClone.position.x][robotClone.position.y].gameBoardAdapterType =
-                when (robotClone.gameBoardAdapterType) {
-                    GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_CURRENT -> {
-                        GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_LINE
-                    }
-
-                    GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_CURRENT -> {
-                        GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_LINE
-                    }
-
-                    else -> {
-                        robotClone.gameBoardAdapterType
-                    }
-                }
+                setGameBoardItemToCurrentLineType(robotClone)
 
             val moveForRobot = validMovesForRobot.random()
             val newRobotPosition = robotClone.position.move(moveForRobot)
             val newCurrentRobot = robotClone.copy(position = newRobotPosition)
 
             if (newBoard[newCurrentRobot.position.x][newCurrentRobot.position.y].gameBoardAdapterType == GameBoardAdapterItemData.GameBoardAdapterType.PRIZE) {
-                gameScoreFlow.value = when (robotClone.gameBoardAdapterType) {
-                    GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_CURRENT -> {
-                        gameScoreFlow.value.updateScoreRobot1()
-                    }
-
-                    GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_CURRENT -> {
-                        gameScoreFlow.value.updateScoreRobot2()
-                    }
-
-                    else -> {
-                        GameBoardScoreData()
-                    }
-                }
+                updateScore(robotClone)
                 gameFlow.value = GameBoardStateData.GAME_FINISHED
                 clearBoard().collect()
                 putRobots().collect()
@@ -213,24 +189,60 @@ class GameBoardUseCase {
                 emit(Unit)
             } else {
                 newBoard[newCurrentRobot.position.x][newCurrentRobot.position.y].gameBoardAdapterType =
-                    when (robotClone.gameBoardAdapterType) {
-                        GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_CURRENT -> {
-                            GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_CURRENT
-                        }
-
-                        GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_CURRENT -> {
-                            GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_CURRENT
-                        }
-
-                        else -> {
-                            robot.gameBoardAdapterType
-                        }
-                    }
+                    setGameBoardItemToCurrentType(robotClone, robot)
                 boardFlow.value = newBoard
             }
 
         }
     }
+
+    private fun updateScore(robotClone: GameBoardAdapterItemData) {
+        gameScoreFlow.value = when (robotClone.gameBoardAdapterType) {
+            GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_CURRENT -> {
+                gameScoreFlow.value.updateScoreRobot1()
+            }
+
+            GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_CURRENT -> {
+                gameScoreFlow.value.updateScoreRobot2()
+            }
+
+            else -> {
+                GameBoardScoreData()
+            }
+        }
+    }
+
+    private fun setGameBoardItemToCurrentType(
+        robotClone: GameBoardAdapterItemData,
+        robot: GameBoardAdapterItemData
+    ) = when (robotClone.gameBoardAdapterType) {
+        GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_CURRENT -> {
+            GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_CURRENT
+        }
+
+        GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_CURRENT -> {
+            GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_CURRENT
+        }
+
+        else -> {
+            robot.gameBoardAdapterType
+        }
+    }
+
+    private fun setGameBoardItemToCurrentLineType(robotClone: GameBoardAdapterItemData) =
+        when (robotClone.gameBoardAdapterType) {
+            GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_CURRENT -> {
+                GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_LINE
+            }
+
+            GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_CURRENT -> {
+                GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_LINE
+            }
+
+            else -> {
+                robotClone.gameBoardAdapterType
+            }
+        }
 
 
     private fun getCurrentRobot1(): GameBoardAdapterItemData {

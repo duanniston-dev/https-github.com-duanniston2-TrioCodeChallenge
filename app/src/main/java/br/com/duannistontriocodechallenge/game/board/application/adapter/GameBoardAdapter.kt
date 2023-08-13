@@ -15,6 +15,7 @@ import br.com.duannistontriocodechallenge.game.board.data.GameBoardAdapterItemDa
 class GameBoardAdapter :
     ListAdapter<GameBoardAdapterItemData, GameBoardAdapter.GameBoardViewHolder>(DIFF_CALLBACK) {
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameBoardViewHolder {
         val view =
             GameBoardAdapterItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -27,40 +28,40 @@ class GameBoardAdapter :
 
     inner class GameBoardViewHolder(private val binding: GameBoardAdapterItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        private val contex = binding.root.context
+        private val context = binding.root.context
         fun bind(item: GameBoardAdapterItemData) {
             when (item.gameBoardAdapterType) {
                 GameBoardAdapterItemData.GameBoardAdapterType.EMPTY -> {
-                    val color = ContextCompat.getColor(contex, R.color.gray)
+                    val color = ContextCompat.getColor(context, R.color.gray)
                     ImageViewCompat.setImageTintList(binding.ivItem, ColorStateList.valueOf(color))
                 }
 
                 GameBoardAdapterItemData.GameBoardAdapterType.PRIZE -> {
-                    val color = ContextCompat.getColor(contex, R.color.yellow)
+                    val color = ContextCompat.getColor(context, R.color.yellow)
                     ImageViewCompat.setImageTintList(binding.ivItem, ColorStateList.valueOf(color))
 
                 }
 
                 GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_CURRENT -> {
-                    val color = ContextCompat.getColor(contex, R.color.purple_1)
+                    val color = ContextCompat.getColor(context, R.color.purple_1)
                     ImageViewCompat.setImageTintList(binding.ivItem, ColorStateList.valueOf(color))
 
                 }
 
                 GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_CURRENT -> {
-                    val color = ContextCompat.getColor(contex, R.color.teal_1)
+                    val color = ContextCompat.getColor(context, R.color.teal_1)
                     ImageViewCompat.setImageTintList(binding.ivItem, ColorStateList.valueOf(color))
 
                 }
 
                 GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_LINE -> {
-                    val color = ContextCompat.getColor(contex, R.color.purple_2)
+                    val color = ContextCompat.getColor(context, R.color.purple_2)
                     ImageViewCompat.setImageTintList(binding.ivItem, ColorStateList.valueOf(color))
 
                 }
 
                 GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_LINE -> {
-                    val color = ContextCompat.getColor(contex, R.color.teal_2)
+                    val color = ContextCompat.getColor(context, R.color.teal_2)
                     ImageViewCompat.setImageTintList(binding.ivItem, ColorStateList.valueOf(color))
 
                 }
@@ -74,14 +75,14 @@ class GameBoardAdapter :
                 oldItem: GameBoardAdapterItemData,
                 newItem: GameBoardAdapterItemData
             ): Boolean {
-                return oldItem == newItem
+                return oldItem ==newItem
             }
 
             override fun areContentsTheSame(
                 oldItem: GameBoardAdapterItemData,
                 newItem: GameBoardAdapterItemData
             ): Boolean {
-                return oldItem == newItem
+                return oldItem ==newItem
             }
         }
     }

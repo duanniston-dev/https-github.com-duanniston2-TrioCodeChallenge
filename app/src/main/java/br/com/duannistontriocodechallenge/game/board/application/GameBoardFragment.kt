@@ -54,6 +54,7 @@ class GameBoardFragment : Fragment() {
     private fun setUpObservers() {
         gameBoardViewModel.boardLiveData.observe(viewLifecycleOwner) {
             gameBoardAdapter.submitList(it)
+            gameBoardAdapter.notifyDataSetChanged()
         }
     }
 

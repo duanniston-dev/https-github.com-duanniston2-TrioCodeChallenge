@@ -1,7 +1,8 @@
 package br.com.duannistontriocodechallenge.game.board.domain
 
 import br.com.duannistontriocodechallenge.game.board.data.GameBoardAdapterItemData
-import br.com.duannistontriocodechallenge.game.board.data.GameBoardState
+import br.com.duannistontriocodechallenge.game.board.data.GameBoardScoreData
+import br.com.duannistontriocodechallenge.game.board.data.GameBoardStateData
 import br.com.duannistontriocodechallenge.game.board.data.Move
 import br.com.duannistontriocodechallenge.game.board.data.Position
 import kotlinx.coroutines.delay
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flattenConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 class GameBoardUseCase {
@@ -26,7 +28,11 @@ class GameBoardUseCase {
             }
         })
 
-    val gameFlow: MutableStateFlow<GameBoardState> = MutableStateFlow(GameBoardState.WAITING)
+    val gameFlow: MutableStateFlow<GameBoardStateData> =
+        MutableStateFlow(GameBoardStateData.WAITING)
+
+    val gameScoreFlow: MutableStateFlow<GameBoardScoreData> =
+        MutableStateFlow(GameBoardScoreData(0, 0))
 
     private fun clearBoard(): Flow<Unit> {
         return flow {
@@ -40,7 +46,7 @@ class GameBoardUseCase {
             }
             boardFlow.value = resetBoard
             emit(Unit)
-            gameFlow.value = GameBoardState.CLEANED
+            gameFlow.value = GameBoardStateData.CLEANED
         }
     }
 
@@ -63,7 +69,7 @@ class GameBoardUseCase {
                 GameBoardAdapterItemData.GameBoardAdapterType.PRIZE
             emit(Unit)
             boardFlow.value = newBoardValues
-            gameFlow.value = GameBoardState.ADDED_PRIZE
+            gameFlow.value = GameBoardStateData.ADDED_PRIZE
         }
 
     }
@@ -84,7 +90,7 @@ class GameBoardUseCase {
             )
             emit(Unit)
             boardFlow.value = newBoard
-            gameFlow.value = GameBoardState.ADDED_ROBOTS
+            gameFlow.value = GameBoardStateData.ADDED_ROBOTS
         }
 
 
@@ -102,9 +108,11 @@ class GameBoardUseCase {
     private fun moveRobot(): Flow<Unit> {
         return flow {
 
+            delay(TimeUnit.SECONDS.toMillis(1))
+
             while (true) {
                 emit(Unit)
-                gameFlow.value = GameBoardState.RUNNING
+                gameFlow.value = GameBoardStateData.RUNNING
 
                 val currentRobot1 = getCurrentRobot1()
 
@@ -130,7 +138,8 @@ class GameBoardUseCase {
 
                     if (newBoard1[newCurrentRobot1.position.x][newCurrentRobot1.position.y].gameBoardAdapterType == GameBoardAdapterItemData.GameBoardAdapterType.PRIZE) {
                         emit(Unit)
-                        gameFlow.value = GameBoardState.ROBOT_1_WIN
+                        gameScoreFlow.value = gameScoreFlow.value.updateScoreRobot1()
+                        gameFlow.value = GameBoardStateData.GAME_FINISHED
                         clearBoard().collect()
                         putRobots().collect()
                         putPrize().collect()
@@ -157,7 +166,6 @@ class GameBoardUseCase {
 
                 }
 
-
                 if (movesRobot2.isNotEmpty()) {
                     val newBoard2 = boardFlow.value.clone()
 
@@ -170,7 +178,8 @@ class GameBoardUseCase {
 
                     if (newBoard2[newCurrentRobot2.position.x][newCurrentRobot2.position.y].gameBoardAdapterType == GameBoardAdapterItemData.GameBoardAdapterType.PRIZE) {
                         emit(Unit)
-                        gameFlow.value = GameBoardState.ROBOT_2_WIN
+                        gameScoreFlow.value = gameScoreFlow.value.updateScoreRobot2()
+                        gameFlow.value = GameBoardStateData.GAME_FINISHED
                         clearBoard().collect()
                         putRobots().collect()
                         putPrize().collect()
@@ -184,7 +193,7 @@ class GameBoardUseCase {
                 }
                 if (movesRobot1.isEmpty() && movesRobot2.isEmpty()) {
                     emit(Unit)
-                    gameFlow.value = GameBoardState.GAME_FINISHED
+                    gameFlow.value = GameBoardStateData.GAME_FINISHED
                     clearBoard().collect()
                     putRobots().collect()
                     putPrize().collect()
@@ -194,46 +203,6 @@ class GameBoardUseCase {
         }
     }
 
-    fun moveRobot2(): Flow<GameBoardState> {
-        return flow {
-
-            while (true) {
-
-                val currentRobot2 = getCurrentRobot2()
-
-                val movesRobot2 = Move.values().filter { move ->
-
-                    val newPosition = currentRobot2.copy().position.move(move)
-                    return@filter isPositionValid(newPosition) && robotCanFollowThisLine(
-                        newPosition.x,
-                        newPosition.y
-                    )
-
-                }
-
-                val newBoard = boardFlow.value.clone()
-
-                newBoard[currentRobot2.position.x][currentRobot2.position.y].gameBoardAdapterType =
-                    GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_LINE
-
-
-                val moveForRobot2 = movesRobot2.random()
-                val newRobot1Position = currentRobot2.position.move(moveForRobot2)
-                val newCurrentRobot2 = currentRobot2.copy(position = newRobot1Position)
-
-                if (newBoard[newCurrentRobot2.position.y][newCurrentRobot2.position.y].gameBoardAdapterType == GameBoardAdapterItemData.GameBoardAdapterType.PRIZE) {
-                    emit(GameBoardState.ROBOT_2_WIN)
-                    break
-                }
-                newBoard[newCurrentRobot2.position.x][newCurrentRobot2.position.y].gameBoardAdapterType =
-                    GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_CURRENT
-
-                delay(500)
-                boardFlow.value = newBoard
-                emit(GameBoardState.RUNNING)
-            }
-        }
-    }
 
     private fun getCurrentRobot1(): GameBoardAdapterItemData {
         val currentRobot1 = boardFlow.value.clone().flatMap { it.toList() }.find {

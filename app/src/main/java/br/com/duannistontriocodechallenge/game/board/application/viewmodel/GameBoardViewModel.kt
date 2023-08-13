@@ -5,9 +5,9 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import br.com.duannistontriocodechallenge.game.board.data.BoardGameScore
 import br.com.duannistontriocodechallenge.game.board.data.GameBoardAdapterItemData
-import br.com.duannistontriocodechallenge.game.board.data.GameBoardState
+import br.com.duannistontriocodechallenge.game.board.data.GameBoardScoreData
+import br.com.duannistontriocodechallenge.game.board.data.GameBoardStateData
 import br.com.duannistontriocodechallenge.game.board.domain.GameBoardUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -20,86 +20,62 @@ class GameBoardViewModel(application: Application, val gameBoardUseCase: GameBoa
     AndroidViewModel(application) {
 
     val boardLiveData: MutableLiveData<List<GameBoardAdapterItemData>> = MutableLiveData()
-    val scoreRobotLiveData: MutableLiveData<BoardGameScore> = MutableLiveData()
+    val scoreRobotLiveData: MutableLiveData<GameBoardScoreData> = MutableLiveData()
 
     init {
+        startObserverBoard()
+        startObserverScore()
+        startObserverGameState()
+        startGame()
+    }
+
+    private fun startObserverBoard() {
         gameBoardUseCase.boardFlow.onStart {
 
         }.flowOn(Dispatchers.IO).onEach { board ->
             boardLiveData.value = board.flatMap { it.toList() }
         }.flowOn(Dispatchers.Main).launchIn(viewModelScope)
+    }
+    private fun startObserverScore() {
+        gameBoardUseCase.gameScoreFlow.onEach {
+            scoreRobotLiveData.value = it
+        }.flowOn(Dispatchers.Main).launchIn(viewModelScope)
+    }
+
+    private fun startObserverGameState() {
 
         gameBoardUseCase.gameFlow.onEach {
             when (it) {
-                GameBoardState.WAITING -> {
+                GameBoardStateData.WAITING -> {
 
                 }
 
-                GameBoardState.CLEANED -> {
+                GameBoardStateData.CLEANED -> {
 
                 }
 
-                GameBoardState.ADDED_ROBOTS -> {
+                GameBoardStateData.ADDED_ROBOTS -> {
 
                 }
 
-                GameBoardState.ADDED_PRIZE -> {
+                GameBoardStateData.ADDED_PRIZE -> {
 
                 }
 
-                GameBoardState.ROBOT_1_WIN,
-                GameBoardState.ROBOT_2_WIN -> {
-                    updateScoreRobot(it)
-                }
-
-                GameBoardState.RUNNING -> {
+                GameBoardStateData.RUNNING -> {
 
                 }
 
-                GameBoardState.GAME_FINISHED -> {
+                GameBoardStateData.GAME_FINISHED -> {
 
                 }
             }
         }.flowOn(Dispatchers.Main).launchIn(viewModelScope)
+    }
 
+    private fun startGame() {
         gameBoardUseCase.startGame().flowOn(Dispatchers.IO).catch {
             Log.e("GameBoardViewModel", "Error", it)
         }.flowOn(Dispatchers.Main).launchIn(viewModelScope)
-
-
-    }
-
-    private fun updateScoreRobot(gameBoardState: GameBoardState) {
-        if (scoreRobotLiveData.isInitialized) {
-            when (gameBoardState) {
-                GameBoardState.ROBOT_1_WIN -> {
-                    scoreRobotLiveData.value =
-                        scoreRobotLiveData.value!!.copy(robot1 = scoreRobotLiveData.value!!.robot1 + 1)
-                }
-
-                GameBoardState.ROBOT_2_WIN -> {
-                    scoreRobotLiveData.value =
-                        scoreRobotLiveData.value!!.copy(robot2 = scoreRobotLiveData.value!!.robot2 + 1)
-                }
-
-                else -> {
-
-                }
-            }
-        } else {
-            when (gameBoardState) {
-                GameBoardState.ROBOT_1_WIN -> {
-                    scoreRobotLiveData.value = BoardGameScore(1, 0)
-                }
-
-                GameBoardState.ROBOT_2_WIN -> {
-                    scoreRobotLiveData.value = BoardGameScore(0, 1)
-                }
-
-                else -> {
-
-                }
-            }
-        }
     }
 }

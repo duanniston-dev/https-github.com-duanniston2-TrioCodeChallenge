@@ -56,6 +56,11 @@ class GameBoardFragment : Fragment() {
             gameBoardAdapter.submitList(it)
             gameBoardAdapter.notifyDataSetChanged()
         }
+
+        gameBoardViewModel.scoreRobotLiveData.observe(viewLifecycleOwner) {
+            bind.tvRobot1.text = it.robot1.toString()
+            bind.tvRobot2.text = it.robot2.toString()
+        }
     }
 
 }

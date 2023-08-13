@@ -15,7 +15,13 @@ import br.com.duannistontriocodechallenge.game.board.data.GameBoardAdapterItemDa
 class GameBoardAdapter :
     ListAdapter<GameBoardAdapterItemData, GameBoardAdapter.GameBoardViewHolder>(DIFF_CALLBACK) {
 
+    init {
+        setHasStableIds(true)
+    }
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameBoardViewHolder {
         val view =
             GameBoardAdapterItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)

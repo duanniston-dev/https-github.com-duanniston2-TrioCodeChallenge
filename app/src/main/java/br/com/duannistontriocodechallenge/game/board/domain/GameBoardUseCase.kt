@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flattenConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.retry
 import kotlin.random.Random
 
 class GameBoardUseCase {
@@ -101,7 +100,7 @@ class GameBoardUseCase {
         return flow {
 
             while (true) {
-
+                emit(GameBoardState.RUNNING)
                 val currentRobot1 = getCurrentRobot1()
 
                 val movesRobot1 = Move.values().filter { move ->
@@ -114,26 +113,66 @@ class GameBoardUseCase {
 
                 }
 
-                val newBoard = board.value.clone()
+                if (movesRobot1.isNotEmpty()) {
+                    val newBoard1 = board.value.clone()
 
-                newBoard[currentRobot1.position.x][currentRobot1.position.y].gameBoardAdapterType =
-                    GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_LINE
+                    newBoard1[currentRobot1.position.x][currentRobot1.position.y].gameBoardAdapterType =
+                        GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_LINE
+
+                    val moveForRobot1 = movesRobot1.random()
+                    val newRobot1Position = currentRobot1.position.move(moveForRobot1)
+                    val newCurrentRobot1 = currentRobot1.copy(position = newRobot1Position)
+
+                    if (newBoard1[newCurrentRobot1.position.x][newCurrentRobot1.position.y].gameBoardAdapterType == GameBoardAdapterItemData.GameBoardAdapterType.PRIZE) {
+                        emit(GameBoardState.ROBOT_1_WIN)
+                        break
+                    }
+                    newBoard1[newCurrentRobot1.position.x][newCurrentRobot1.position.y].gameBoardAdapterType =
+                        GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_CURRENT
+
+                    board.value = newBoard1
+                }
+
+                delay(500)
+
+                //Robot 2
+                val currentRobot2 = getCurrentRobot2()
+
+                val movesRobot2 = Move.values().filter { move ->
+
+                    val newPosition = currentRobot2.copy().position.move(move)
+                    return@filter isPositionValid(newPosition) && robotCanFollowThisLine(
+                        newPosition.x,
+                        newPosition.y
+                    )
+
+                }
 
 
-                val moveForRobot1 = movesRobot1.random()
-                val newRobot1Position = currentRobot1.position.move(moveForRobot1)
-                val newCurrentRobot1 = currentRobot1.copy(position = newRobot1Position)
+                if (movesRobot2.isNotEmpty()) {
+                    val newBoard2 = board.value.clone()
 
-                if (newBoard[newCurrentRobot1.position.y][newCurrentRobot1.position.y].gameBoardAdapterType == GameBoardAdapterItemData.GameBoardAdapterType.PRIZE) {
-                    emit(GameBoardState.ROBOT_1_WIN)
+                    newBoard2[currentRobot2.position.x][currentRobot2.position.y].gameBoardAdapterType =
+                        GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_LINE
+
+                    val moveForRobot2 = movesRobot2.random()
+                    val newRobot2Position = currentRobot2.position.move(moveForRobot2)
+                    val newCurrentRobot2 = currentRobot2.copy(position = newRobot2Position)
+
+                    if (newBoard2[newCurrentRobot2.position.x][newCurrentRobot2.position.y].gameBoardAdapterType == GameBoardAdapterItemData.GameBoardAdapterType.PRIZE) {
+                        emit(GameBoardState.ROBOT_2_WIN)
+                        break
+                    }
+                    newBoard2[newCurrentRobot2.position.x][newCurrentRobot2.position.y].gameBoardAdapterType =
+                        GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_CURRENT
+
+                    board.value = newBoard2
+                }
+                if (movesRobot1.isEmpty() && movesRobot2.isEmpty()) {
+                    emit(GameBoardState.GAME_FINISHED)
                     break
                 }
-                newBoard[newCurrentRobot1.position.x][newCurrentRobot1.position.y].gameBoardAdapterType =
-                    GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_CURRENT
-
-                board.value = newBoard
                 delay(500)
-                emit(GameBoardState.RUNNING)
             }
         }
     }

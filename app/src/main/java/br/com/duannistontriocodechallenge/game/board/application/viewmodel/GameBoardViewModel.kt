@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import br.com.duannistontriocodechallenge.game.board.data.BoardGameScore
 import br.com.duannistontriocodechallenge.game.board.data.GameBoardAdapterItemData
 import br.com.duannistontriocodechallenge.game.board.data.GameBoardState
 import br.com.duannistontriocodechallenge.game.board.domain.GameBoardUseCase
@@ -19,6 +20,7 @@ class GameBoardViewModel(application: Application, val gameBoardUseCase: GameBoa
     AndroidViewModel(application) {
 
     val boardLiveData: MutableLiveData<List<GameBoardAdapterItemData>> = MutableLiveData()
+    val scoreRobotLiveData: MutableLiveData<BoardGameScore> = MutableLiveData()
 
     init {
         gameBoardUseCase.board.onStart {
@@ -42,14 +44,12 @@ class GameBoardViewModel(application: Application, val gameBoardUseCase: GameBoa
                 }
 
                 GameBoardState.READY_TO_START -> {
-                }
-
-                GameBoardState.ROBOT_1_WIN -> {
 
                 }
 
+                GameBoardState.ROBOT_1_WIN,
                 GameBoardState.ROBOT_2_WIN -> {
-
+                    updateScoreRobot(it)
                 }
 
                 GameBoardState.RUNNING -> {
@@ -65,5 +65,39 @@ class GameBoardViewModel(application: Application, val gameBoardUseCase: GameBoa
         }.flowOn(Dispatchers.Main).launchIn(viewModelScope)
 
 
+    }
+
+    private fun updateScoreRobot(gameBoardState: GameBoardState) {
+        if (scoreRobotLiveData.isInitialized) {
+            when (gameBoardState) {
+                GameBoardState.ROBOT_1_WIN -> {
+                    scoreRobotLiveData.value =
+                        scoreRobotLiveData.value!!.copy(robot1 = scoreRobotLiveData.value!!.robot1 + 1)
+                }
+
+                GameBoardState.ROBOT_2_WIN -> {
+                    scoreRobotLiveData.value =
+                        scoreRobotLiveData.value!!.copy(robot2 = scoreRobotLiveData.value!!.robot2 + 1)
+                }
+
+                else -> {
+
+                }
+            }
+        } else {
+            when (gameBoardState) {
+                GameBoardState.ROBOT_1_WIN -> {
+                    scoreRobotLiveData.value = BoardGameScore(1,0)
+                }
+
+                GameBoardState.ROBOT_2_WIN -> {
+                    scoreRobotLiveData.value =BoardGameScore(0,1)
+                }
+
+                else -> {
+
+                }
+            }
+        }
     }
 }

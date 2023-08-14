@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:navigationIconTint="@color/white"
+        app:title="Score"
+        app:titleTextColor="@color/white" />
+
+    <TextView
+        android:id="@+id/tv_robot1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:drawablePadding="5dp"
+        android:gravity="center"
+        android:textColor="@color/purple_1"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_no_one_win"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:text="0" />
+
+    <ImageView
+        android:id="@+id/iv_robot1"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/shape_circle"
+        app:layout_constraintBottom_toTopOf="@id/tv_robot1"
+        app:layout_constraintEnd_toEndOf="@id/tv_robot1"
+        app:layout_constraintStart_toStartOf="@id/tv_robot1"
+        app:tint="@color/purple_1" />
+
+    <TextView
+        android:id="@+id/tv_robot2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="25dp"
+        android:drawablePadding="5dp"
+        android:gravity="center"
+        android:textColor="@color/teal_1"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_no_one_win"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:text="0" />
+
+    <ImageView
+        android:id="@+id/iv_robot2"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/shape_circle"
+        app:layout_constraintBottom_toTopOf="@id/tv_robot2"
+        app:layout_constraintEnd_toEndOf="@id/tv_robot2"
+        app:layout_constraintStart_toStartOf="@id/tv_robot2"
+        app:tint="@color/teal_1" />
+
+    <TextView
+        android:id="@+id/tv_no_one_win"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/yellow"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_robot2"
+        app:layout_constraintStart_toEndOf="@id/tv_robot1"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:text="0" />
+
+    <ImageView
+        android:id="@+id/iv_no_one_win"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/shape_circle"
+        app:layout_constraintBottom_toTopOf="@id/tv_no_one_win"
+        app:layout_constraintEnd_toEndOf="@id/tv_no_one_win"
+        app:layout_constraintStart_toStartOf="@id/tv_no_one_win"
+        app:tint="@color/yellow" />
+</androidx.constraintlayout.widget.ConstraintLayout>

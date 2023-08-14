@@ -33,6 +33,9 @@ class GameOnboardingFragment : Fragment() {
         bind.btnEnter.setOnClickListener {
             findNavController().navigate(GameOnboardingFragmentDirections.actionGameOnboardingFragmentToGameBoardFragment())
         }
+        bind.btnScore.setOnClickListener {
+            findNavController().navigate(GameOnboardingFragmentDirections.actionGameOnboardingFragmentToGameScoreFragment())
+        }
     }
 
 }

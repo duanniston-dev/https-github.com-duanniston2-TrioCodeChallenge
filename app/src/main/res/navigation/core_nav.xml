@@ -11,9 +11,16 @@
         <action
             android:id="@+id/action_gameOnboardingFragment_to_gameBoardFragment"
             app:destination="@id/gameBoardFragment" />
+        <action
+            android:id="@+id/action_gameOnboardingFragment_to_gameScoreFragment"
+            app:destination="@id/gameScoreFragment" />
     </fragment>
     <fragment
         android:id="@+id/gameBoardFragment"
         android:name="br.com.duannistontriocodechallenge.game.board.application.GameBoardFragment"
         android:label="GameBoardFragment" />
+    <fragment
+        android:id="@+id/gameScoreFragment"
+        android:name="br.com.duannistontriocodechallenge.game.score.application.GameScoreFragment"
+        android:label="GameScoreFragment" />
 </navigation>

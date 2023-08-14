@@ -54,8 +54,11 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     //Koin
     implementation("io.insert-koin:koin-android:3.4.3")
-    //  Kotlin
+    //Kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    //Timber
+    implementation("com.jakewharton.timber:timber:5.0.1")
+
 
     //Test
     //Android X

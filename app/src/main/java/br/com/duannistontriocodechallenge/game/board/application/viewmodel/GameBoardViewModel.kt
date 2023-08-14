@@ -1,10 +1,11 @@
 package br.com.duannistontriocodechallenge.game.board.application.viewmodel
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import br.com.duannistontriocodechallenge.core.Resource
+import br.com.duannistontriocodechallenge.core.postResourceGenericError
 import br.com.duannistontriocodechallenge.game.board.data.GameBoardAdapterItemData
 import br.com.duannistontriocodechallenge.game.board.data.GameBoardScoreData
 import br.com.duannistontriocodechallenge.game.board.data.GameBoardStateData
@@ -15,12 +16,14 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import timber.log.Timber
 
 class GameBoardViewModel(application: Application, val gameBoardUseCase: GameBoardUseCase) :
     AndroidViewModel(application) {
 
-    val boardLiveData: MutableLiveData<List<GameBoardAdapterItemData>> = MutableLiveData()
-    val scoreRobotLiveData: MutableLiveData<GameBoardScoreData> = MutableLiveData()
+    val boardLiveData: MutableLiveData<Resource<List<GameBoardAdapterItemData>>> = MutableLiveData()
+    val scoreRobotLiveData: MutableLiveData<Resource<GameBoardScoreData>> = MutableLiveData()
+    val gameFlowLiveData: MutableLiveData<Resource<GameBoardStateData>> = MutableLiveData()
 
     init {
         startObserverBoard()
@@ -31,51 +34,38 @@ class GameBoardViewModel(application: Application, val gameBoardUseCase: GameBoa
 
     private fun startObserverBoard() {
         gameBoardUseCase.boardFlow.onStart {
-
+            boardLiveData.postValue(Resource.Loading)
         }.flowOn(Dispatchers.IO).onEach { board ->
-            boardLiveData.value = board.flatMap { it.toList() }
+            boardLiveData.value = Resource.Success(board.flatMap { it.toList() })
+        }.catch {
+            boardLiveData.postResourceGenericError(it)
         }.flowOn(Dispatchers.Main).launchIn(viewModelScope)
     }
+
     private fun startObserverScore() {
-        gameBoardUseCase.gameScoreFlow.onEach {
-            scoreRobotLiveData.value = it
+        gameBoardUseCase.gameScoreFlow.onStart {
+            scoreRobotLiveData.postValue(Resource.Loading)
+        }.onEach {
+            scoreRobotLiveData.value = Resource.Success(it)
+        }.catch {
+            scoreRobotLiveData.postResourceGenericError(it)
         }.flowOn(Dispatchers.Main).launchIn(viewModelScope)
     }
 
     private fun startObserverGameState() {
 
-        gameBoardUseCase.gameFlow.onEach {
-            when (it) {
-                GameBoardStateData.WAITING -> {
-
-                }
-
-                GameBoardStateData.CLEANED -> {
-
-                }
-
-                GameBoardStateData.ADDED_ROBOTS -> {
-
-                }
-
-                GameBoardStateData.ADDED_PRIZE -> {
-
-                }
-
-                GameBoardStateData.RUNNING -> {
-
-                }
-
-                GameBoardStateData.GAME_FINISHED -> {
-
-                }
-            }
+        gameBoardUseCase.gameFlow.onStart {
+            gameFlowLiveData.postValue(Resource.Loading)
+        }.onEach {
+            gameFlowLiveData.value = Resource.Success(it)
+        }.catch {
+            gameFlowLiveData.postResourceGenericError(it)
         }.flowOn(Dispatchers.Main).launchIn(viewModelScope)
     }
 
     private fun startGame() {
-        gameBoardUseCase.startGame().flowOn(Dispatchers.IO).catch {
-            Log.e("GameBoardViewModel", "Error", it)
-        }.flowOn(Dispatchers.Main).launchIn(viewModelScope)
+        gameBoardUseCase.startGame().catch {
+            Timber.e(it)
+        }.flowOn(Dispatchers.IO).launchIn(viewModelScope)
     }
 }

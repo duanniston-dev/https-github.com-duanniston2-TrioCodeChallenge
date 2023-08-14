@@ -5,10 +5,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import br.com.duannistontriocodechallenge.core.Resource
+import br.com.duannistontriocodechallenge.core.postResourceGenericError
 import br.com.duannistontriocodechallenge.game.score.application.GameScoreViewData
 import br.com.duannistontriocodechallenge.game.score.application.toViewData
 import br.com.duannistontriocodechallenge.game.score.domain.GameScoreUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -36,6 +38,8 @@ class GameScoreViewModel(application: Application, val gameScoreUseCase: GameSco
                     gameScoreLiveData.value = Resource.Success(it.data.toViewData())
                 }
             }
+        }.catch {
+            gameScoreLiveData.postResourceGenericError(it)
         }.flowOn(Dispatchers.Main).launchIn(viewModelScope)
     }
 }

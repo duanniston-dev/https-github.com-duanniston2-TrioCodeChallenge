@@ -49,6 +49,10 @@ class GameBoardFragment : Fragment() {
         bind.toolbar.setNavigationOnClickListener {
             requireActivity().onBackPressed()
         }
+
+        bind.tvRobot1.text = "0"
+        bind.tvRobot2.text = "0"
+        bind.tvNoOneWin.text = "0"
     }
 
     private fun setUpObservers() {

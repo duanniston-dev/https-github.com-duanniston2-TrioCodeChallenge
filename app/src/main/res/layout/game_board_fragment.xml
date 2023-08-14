@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -23,7 +24,7 @@
         android:layout_marginStart="25dp"
         android:drawablePadding="5dp"
         android:gravity="center"
-        android:text="0"
+        tools:text="0"
         android:textColor="@color/purple_1"
         android:textSize="25sp"
         app:layout_constraintBottom_toTopOf="@id/rv_board"
@@ -48,7 +49,7 @@
         android:layout_marginEnd="25dp"
         android:drawablePadding="5dp"
         android:gravity="center"
-        android:text="0"
+        tools:text="0"
         android:textColor="@color/teal_1"
         android:textSize="25sp"
         app:layout_constraintBottom_toTopOf="@id/rv_board"
@@ -71,7 +72,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="0"
+        tools:text="0"
         android:textColor="@color/yellow"
         android:textSize="25sp"
         app:layout_constraintBottom_toTopOf="@id/rv_board"

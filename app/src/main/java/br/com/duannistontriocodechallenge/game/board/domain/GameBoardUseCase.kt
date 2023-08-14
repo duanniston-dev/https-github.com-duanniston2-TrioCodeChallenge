@@ -5,6 +5,7 @@ import br.com.duannistontriocodechallenge.game.board.data.GameBoardScoreData
 import br.com.duannistontriocodechallenge.game.board.data.GameBoardStateData
 import br.com.duannistontriocodechallenge.game.board.data.Move
 import br.com.duannistontriocodechallenge.game.board.data.Position
+import br.com.duannistontriocodechallenge.game.score.domain.GameScoreUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -19,7 +20,7 @@ import kotlin.random.Random
 /**
  * UseCase responsible for managing the game board state, robots, prize, and game state.
  */
-class GameBoardUseCase {
+class GameBoardUseCase(val gameScoreUseCase: GameScoreUseCase) {
 
     // StateFlow to represent the current game board
     val boardFlow: MutableStateFlow<Array<Array<GameBoardAdapterItemData>>> =
@@ -188,6 +189,12 @@ class GameBoardUseCase {
                 // If neither robot can move, finish the game and reset the board.
                 if (validMovesForRobot1.isEmpty() && movesRobot2.isEmpty()) {
                     gameScoreFlow.value = gameScoreFlow.value.updateScoreNoOneWin()
+                    gameScoreUseCase.setScoreFromLastGame(
+                        0,
+                        0,
+                        1
+                    ).collect()
+
                     gameFlow.value = GameBoardStateData.GAME_FINISHED
                     clearBoard().collect()
                     putRobots().collect()
@@ -240,7 +247,7 @@ class GameBoardUseCase {
             val newCurrentRobot = robotClone.copy(position = newRobotPosition)
 
             if (newBoard[newCurrentRobot.position.x][newCurrentRobot.position.y].gameBoardAdapterType == GameBoardAdapterItemData.GameBoardAdapterType.PRIZE) {
-                updateScore(robotClone)
+                updateRobotScore(robotClone)
                 gameFlow.value = GameBoardStateData.GAME_FINISHED
                 clearBoard().collect()
                 putRobots().collect()
@@ -261,13 +268,24 @@ class GameBoardUseCase {
      *
      * @param robotClone Current data of the robot being moved.
      */
-    private fun updateScore(robotClone: GameBoardAdapterItemData) {
+    private suspend fun updateRobotScore(robotClone: GameBoardAdapterItemData) {
         gameScoreFlow.value = when (robotClone.gameBoardAdapterType) {
             GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_1_CURRENT -> {
+                gameScoreUseCase.setScoreFromLastGame(
+                    1,
+                    0,
+                    0
+                ).collect()
                 gameScoreFlow.value.updateScoreRobot1()
+
             }
 
             GameBoardAdapterItemData.GameBoardAdapterType.ROBOT_2_CURRENT -> {
+                gameScoreUseCase.setScoreFromLastGame(
+                    0,
+                    1,
+                    0
+                ).collect()
                 gameScoreFlow.value.updateScoreRobot2()
             }
 
@@ -275,6 +293,15 @@ class GameBoardUseCase {
                 GameBoardScoreData()
             }
         }
+
+    }
+
+    private suspend fun updateNoOneScore() {
+        gameScoreUseCase.setScoreFromLastGame(
+            gameScoreFlow.value.robot1,
+            gameScoreFlow.value.robot2,
+            gameScoreFlow.value.noOneWin
+        ).collect()
     }
 
     /**

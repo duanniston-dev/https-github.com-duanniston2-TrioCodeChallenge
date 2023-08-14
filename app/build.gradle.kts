@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("androidx.navigation.safeargs")
+    kotlin("plugin.serialization") version "1.9.0"
+
 }
 
 android {
@@ -47,10 +49,14 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.0")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.0")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     //Google
     implementation("com.google.android.material:material:1.9.0")
     //Koin
     implementation("io.insert-koin:koin-android:3.4.3")
+    //  Kotlin
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
     //Test
     //Android X
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

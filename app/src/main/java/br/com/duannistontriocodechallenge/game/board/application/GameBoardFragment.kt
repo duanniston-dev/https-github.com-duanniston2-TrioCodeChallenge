@@ -60,6 +60,7 @@ class GameBoardFragment : Fragment() {
         gameBoardViewModel.scoreRobotLiveData.observe(viewLifecycleOwner) {
             bind.tvRobot1.text = it.robot1.toString()
             bind.tvRobot2.text = it.robot2.toString()
+            bind.tvNoOneWin.text = it.noOneWin.toString()
         }
     }
 

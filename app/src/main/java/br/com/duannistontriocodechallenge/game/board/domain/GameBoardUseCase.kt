@@ -187,6 +187,7 @@ class GameBoardUseCase {
 
                 // If neither robot can move, finish the game and reset the board.
                 if (validMovesForRobot1.isEmpty() && movesRobot2.isEmpty()) {
+                    gameScoreFlow.value = gameScoreFlow.value.updateScoreNoOneWin()
                     gameFlow.value = GameBoardStateData.GAME_FINISHED
                     clearBoard().collect()
                     putRobots().collect()
